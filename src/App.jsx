@@ -1,86 +1,103 @@
 import { useState } from 'react'
 import './App.css'
 import AuthPage from './pages/AuthPage'
+import CashPage from './pages/CashPage'
+import ClientsPage from './pages/ClientsPage'
 import Dashboard from './pages/Dashboard'
+import InventoryPage from './pages/InventoryPage'
 import ModulePage from './pages/ModulePage'
+import ProductsPage from './pages/ProductsPage'
+import ReportsPage from './pages/ReportsPage'
+import SalesPage from './pages/SalesPage'
 
 const sections = [
   {
     id: 'dashboard',
     label: 'Inicio',
-    icon: '⌂',
+    icon: '01',
     description: 'Vista general del negocio',
+    group: 'General',
     render: () => <Dashboard />,
   },
   {
     id: 'auth',
     label: 'Autenticación',
-    icon: '🔐',
+    icon: '02',
     description: 'Inicio de sesión del sistema',
+    group: 'Seguridad',
     render: () => <AuthPage />,
   },
   {
     id: 'roles',
     label: 'Roles',
-    icon: '🛡️',
+    icon: '03',
     description: 'Administración de permisos',
+    group: 'Seguridad',
     render: () => <ModulePage title="Roles" endpoint="/roles" description="Gestión de roles del sistema." />,
   },
   {
     id: 'usuarios',
     label: 'Usuarios',
-    icon: '👤',
+    icon: '04',
     description: 'Gestión de usuarios',
+    group: 'Seguridad',
     render: () => <ModulePage title="Usuarios" endpoint="/usuarios" description="Listado de usuarios del minimercado." />,
   },
   {
     id: 'productos',
     label: 'Productos',
-    icon: '📦',
+    icon: '05',
     description: 'Catálogo y stock',
-    render: () => <ModulePage title="Productos" endpoint="/productos" description="Catálogo de productos y precios." />,
+    group: 'Operaciones',
+    render: () => <ProductsPage />,
   },
   {
     id: 'clientes',
     label: 'Clientes',
-    icon: '🧾',
+    icon: '06',
     description: 'Registro de clientes',
-    render: () => <ModulePage title="Clientes" endpoint="/clientes" description="Información básica de clientes." />,
+    group: 'Operaciones',
+    render: () => <ClientsPage />,
   },
   {
     id: 'proveedores',
     label: 'Proveedores',
-    icon: '🚚',
+    icon: '07',
     description: 'Gestión de proveedores',
+    group: 'Operaciones',
     render: () => <ModulePage title="Proveedores" endpoint="/proveedores" description="Datos de proveedores del negocio." />,
   },
   {
     id: 'ventas',
     label: 'Ventas',
-    icon: '💵',
+    icon: '08',
     description: 'Registro de ventas',
-    render: () => <ModulePage title="Ventas" endpoint="/ventas" description="Historial de ventas y detalles." />,
+    group: 'Operaciones',
+    render: () => <SalesPage />,
   },
   {
     id: 'caja',
     label: 'Caja',
-    icon: '🏧',
+    icon: '09',
     description: 'Apertura y movimientos',
-    render: () => <ModulePage title="Caja" endpoint="/caja" description="Operaciones de caja del negocio." />,
+    group: 'Finanzas',
+    render: () => <CashPage />,
   },
   {
     id: 'inventario',
     label: 'Inventario',
-    icon: '📊',
+    icon: '10',
     description: 'Estado del stock',
-    render: () => <ModulePage title="Inventario" endpoint="/inventario" description="Consulta del inventario actual." />,
+    group: 'Finanzas',
+    render: () => <InventoryPage />,
   },
   {
     id: 'reportes',
     label: 'Reportes',
-    icon: '📈',
+    icon: '11',
     description: 'Resumen y métricas',
-    render: () => <ModulePage title="Reportes" endpoint="/reportes/resumen" description="Información resumida del negocio." />,
+    group: 'Reportes',
+    render: () => <ReportsPage />,
   },
 ]
 
@@ -89,29 +106,40 @@ function App() {
 
   const currentSection = sections.find((section) => section.id === activeSection) || sections[0]
 
+  const groupedSections = sections.reduce((acc, section) => {
+    if (!acc[section.group]) acc[section.group] = []
+    acc[section.group].push(section)
+    return acc
+  }, {})
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand-block">
-          <p className="eyebrow">Frontend</p>
+          <span className="brand-badge">Operación corporativa</span>
           <h1>Minimercado UPS</h1>
-          <p>Base visual inicial para conectar con el backend.</p>
+          <p>Plataforma de supervisión y gestión para operaciones comerciales.</p>
         </div>
 
         <nav className="nav-list" aria-label="Secciones del sistema">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              className={`nav-btn ${activeSection === section.id ? 'active' : ''}`}
-              onClick={() => setActiveSection(section.id)}
-            >
-              <span className="nav-icon">{section.icon}</span>
-              <span>
-                <strong>{section.label}</strong>
-                <small>{section.description}</small>
-              </span>
-            </button>
+          {Object.entries(groupedSections).map(([groupName, items]) => (
+            <div key={groupName} className="nav-group">
+              <div className="nav-section-title">{groupName}</div>
+              {items.map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  className={`nav-btn ${activeSection === section.id ? 'active' : ''}`}
+                  onClick={() => setActiveSection(section.id)}
+                >
+                  <span className="nav-icon">{section.icon}</span>
+                  <span>
+                    <strong>{section.label}</strong>
+                    <small>{section.description}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>
