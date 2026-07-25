@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import AuthPage from './pages/AuthPage'
 import CashPage from './pages/CashPage'
@@ -104,6 +104,17 @@ const sections = [
 
 function App() {
   const [activeSection, setActiveSection] = useState('dashboard')
+
+  useEffect(() => {
+    const handleNavigate = (event) => {
+      const sectionId = event.detail
+      if (sections.find((s) => s.id === sectionId)) {
+        setActiveSection(sectionId)
+      }
+    }
+    window.addEventListener('navigate-to', handleNavigate)
+    return () => window.removeEventListener('navigate-to', handleNavigate)
+  }, [])
 
   const currentSection = sections.find((section) => section.id === activeSection) || sections[0]
 
