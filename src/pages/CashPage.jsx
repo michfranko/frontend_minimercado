@@ -443,7 +443,9 @@ function CashPage() {
                         transform: 'translateY(-50%)',
                         color: '#64748b',
                         fontWeight: 600,
-                        fontSize: '1rem',
+                        fontSize: '0.9rem',
+                        zIndex: 1,
+                        pointerEvents: 'none',
                       }}
                     >
                       $
@@ -457,7 +459,7 @@ function CashPage() {
                       value={form.saldo_inicial}
                       onChange={(event) => setForm({ saldo_inicial: event.target.value })}
                       required
-                      style={{ paddingLeft: 28 }}
+                      style={{ paddingLeft: 28, height: 40, boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -466,10 +468,15 @@ function CashPage() {
                   type="submit"
                   disabled={submitting}
                   style={{
-                    padding: '12px 14px',
-                    fontSize: '0.95rem',
+                    height: 40,
+                    padding: '0 16px',
+                    fontSize: '0.88rem',
                     background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-                    boxShadow: '0 8px 20px rgba(22, 163, 74, 0.25)',
+                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.2)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxSizing: 'border-box',
                   }}
                 >
                   {submitting ? 'Abriendo caja...' : '🔓 Abrir caja'}
@@ -566,6 +573,8 @@ function CashPage() {
                     onChange={(event) => setMovementForm((current) => ({ ...current, tipo_movimiento: event.target.value }))}
                     style={{
                       borderColor: movementForm.tipo_movimiento === 'INGRESO' ? '#86efac' : '#fca5a5',
+                      height: 40,
+                      boxSizing: 'border-box',
                     }}
                   >
                     <option value="INGRESO">💰 Ingreso — Dinero que entra (ventas, pagos, etc.)</option>
@@ -585,7 +594,9 @@ function CashPage() {
                         transform: 'translateY(-50%)',
                         color: '#64748b',
                         fontWeight: 600,
-                        fontSize: '1rem',
+                        fontSize: '0.9rem',
+                        zIndex: 1,
+                        pointerEvents: 'none',
                       }}
                     >
                       $
@@ -599,7 +610,7 @@ function CashPage() {
                       value={movementForm.monto}
                       onChange={(event) => setMovementForm((current) => ({ ...current, monto: event.target.value }))}
                       required
-                      style={{ paddingLeft: 28 }}
+                      style={{ paddingLeft: 28, height: 40, boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -614,13 +625,22 @@ function CashPage() {
                     value={movementForm.descripcion}
                     onChange={(event) => setMovementForm((current) => ({ ...current, descripcion: event.target.value }))}
                     required
+                    style={{ height: 40, boxSizing: 'border-box' }}
                   />
                 </div>
                 <button
                   className="button primary"
                   type="submit"
                   disabled={submitting}
-                  style={{ padding: '12px 14px', fontSize: '0.95rem' }}
+                  style={{
+                    height: 40,
+                    padding: '0 16px',
+                    fontSize: '0.88rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxSizing: 'border-box',
+                  }}
                 >
                   {submitting ? 'Guardando...' : '💾 Guardar movimiento'}
                 </button>
@@ -656,7 +676,9 @@ function CashPage() {
                           transform: 'translateY(-50%)',
                           color: '#64748b',
                           fontWeight: 600,
-                          fontSize: '1rem',
+                          fontSize: '0.9rem',
+                          zIndex: 1,
+                          pointerEvents: 'none',
                         }}
                       >
                         $
@@ -670,13 +692,14 @@ function CashPage() {
                         value={closeForm.saldo_final}
                         onChange={(event) => setCloseForm({ saldo_final: event.target.value })}
                         required
-                        style={{ paddingLeft: 28 }}
+                        style={{ paddingLeft: 28, height: 40, boxSizing: 'border-box' }}
                       />
                     </div>
                   </div>
                   <button
                     style={{
-                      padding: '10px 18px',
+                      height: 40,
+                      padding: '0 18px',
                       borderRadius: 10,
                       border: '1px solid #fca5a5',
                       background: '#fef2f2',
@@ -686,6 +709,10 @@ function CashPage() {
                       fontSize: '0.88rem',
                       whiteSpace: 'nowrap',
                       transition: 'background 0.2s',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxSizing: 'border-box',
                     }}
                     onClick={handleCloseCash}
                     disabled={submitting}
