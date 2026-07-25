@@ -2201,6 +2201,24 @@
   padding-top: 4px;
 }
 
+/* ===== Usuarios Page ===== */
+
+.usuarios-row {
+  grid-template-columns: 60px 1.2fr 1.5fr 1fr 90px 80px !important;
+}
+
+.usuarios-col-email {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuarios-modal {
+  max-width: 520px !important;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .roles-row {
@@ -2209,6 +2227,10 @@
 
   .roles-col-desc {
     display: none;
+  }
+
+  .usuarios-row {
+    grid-template-columns: 50px 1fr 1fr 80px 70px 70px !important;
   }
 
   .roles-modal {
@@ -2231,6 +2253,14 @@
 
   .roles-col-desc,
   .roles-col-id {
+    display: none;
+  }
+
+  .usuarios-row {
+    grid-template-columns: 40px 1fr 70px 60px !important;
+  }
+
+  .usuarios-col-email {
     display: none;
   }
 

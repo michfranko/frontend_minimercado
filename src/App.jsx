@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import InventoryPage from './pages/InventoryPage'
 import ModulePage from './pages/ModulePage'
 import RolesPage from './pages/RolesPage'
+import UsuariosPage from './pages/UsuariosPage'
 import ProductsPage from './pages/ProductsPage'
 import ProveedoresPage from './pages/ProveedoresPage'
 import ReportsPage from './pages/ReportsPage'
@@ -43,7 +44,7 @@ const sections = [
     icon: '04',
     description: 'Gestión de usuarios',
     group: 'Seguridad',
-    render: () => <ModulePage title="Usuarios" endpoint="/usuarios" description="Listado de usuarios del minimercado." />,
+    render: () => <UsuariosPage />,
   },
   {
     id: 'productos',
