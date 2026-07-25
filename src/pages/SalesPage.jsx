@@ -95,6 +95,11 @@ function SalesPage() {
     }
   }
 
+  const getClientName = (clienteId) => {
+    const client = clients.find((c) => c.id === clienteId)
+    return client ? client.nombre : `#${clienteId}`
+  }
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -105,87 +110,95 @@ function SalesPage() {
         </div>
       </div>
 
-      <div className="products-layout">
-        <form className="form-card product-form" onSubmit={handleSubmit}>
-          <h3>Registrar venta</h3>
-          <div className="form-grid">
-            <div className="field">
-              <label htmlFor="cliente_id">Cliente</label>
-              <select id="cliente_id" value={form.cliente_id} onChange={handleSelectChange} required>
-                <option value="">Seleccione un cliente</option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.nombre}
-                  </option>
+      <div className="sales-layout">
+        {/* Columna izquierda: formulario */}
+        <div className="sales-form-col">
+          <form className="form-card" onSubmit={handleSubmit}>
+            <h3>Registrar venta</h3>
+            <div className="form-grid">
+              <div className="field">
+                <label htmlFor="cliente_id">Cliente</label>
+                <select id="cliente_id" value={form.cliente_id} onChange={handleSelectChange} required>
+                  <option value="">Seleccione un cliente</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sales-details-section">
+                <label className="sales-details-label">Productos de la venta</label>
+                {form.detalles.map((detail, index) => (
+                  <div key={index} className="sales-detail-row">
+                    <div className="field sales-product-field">
+                      <select value={detail.producto_id} onChange={(event) => handleDetailChange(index, 'producto_id', event.target.value)} required>
+                        <option value="">Seleccione un producto</option>
+                        {products.map((product) => (
+                          <option key={product.id} value={product.id}>
+                            {product.nombre} — ${Number(product.precio).toFixed(2)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="field sales-qty-field">
+                      <input type="number" min="1" value={detail.cantidad} onChange={(event) => handleDetailChange(index, 'cantidad', event.target.value)} required />
+                    </div>
+                    {form.detalles.length > 1 && (
+                      <button type="button" className="button secondary sales-remove-btn" onClick={() => removeDetail(index)}>
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 ))}
-              </select>
+                <button type="button" className="button secondary sales-add-btn" onClick={addDetail}>
+                  + Agregar producto
+                </button>
+              </div>
             </div>
 
-            {form.detalles.map((detail, index) => (
-              <div key={index} className="detail-row">
-                <div className="field">
-                  <label>Producto</label>
-                  <select value={detail.producto_id} onChange={(event) => handleDetailChange(index, 'producto_id', event.target.value)} required>
-                    <option value="">Seleccione un producto</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>Cantidad</label>
-                  <input type="number" min="1" value={detail.cantidad} onChange={(event) => handleDetailChange(index, 'cantidad', event.target.value)} required />
-                </div>
-                {form.detalles.length > 1 && (
-                  <button type="button" className="button secondary" onClick={() => removeDetail(index)}>
-                    Quitar
-                  </button>
-                )}
-              </div>
-            ))}
-
-            <button type="button" className="button secondary" onClick={addDetail}>
-              + Agregar producto
+            <button className="button primary" type="submit" disabled={submitting} style={{ marginTop: 12, width: '100%' }}>
+              {submitting ? 'Guardando...' : 'Guardar venta'}
             </button>
-          </div>
+            {error && <div className="result-block">{error}</div>}
+            {success && <div className="result-block success">{success}</div>}
+          </form>
+        </div>
 
-          <button className="button primary" type="submit" disabled={submitting}>
-            {submitting ? 'Guardando...' : 'Guardar venta'}
-          </button>
-          {error && <div className="result-block">{error}</div>}
-          {success && <div className="result-block success">{success}</div>}
-        </form>
-
-        <div className="table-card product-list">
-          <div className="table-header">
-            <strong>Historial de ventas</strong>
-            <span>{sales.length} registros</span>
-          </div>
-
-          {loading ? (
-            <p>Cargando ventas...</p>
-          ) : sales.length === 0 ? (
-            <p className="empty">No hay ventas registradas aún.</p>
-          ) : (
-            <div className="product-table">
-              <div className="product-row product-row-header">
-                <span>ID</span>
-                <span>Cliente</span>
-                <span>Total</span>
-                <span>Fecha</span>
-              </div>
-              {sales.map((sale) => (
-                <div key={sale.id} className="product-row">
-                  <span>#{sale.id}</span>
-                  <span>{sale.cliente_id}</span>
-                  <span>${Number(sale.total || 0).toFixed(2)}</span>
-                  <span>{new Date(sale.fecha).toLocaleDateString()}</span>
-                </div>
-              ))}
+        {/* Columna derecha: historial */}
+        <div className="sales-history-col">
+          <div className="table-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div className="table-header">
+              <strong>Historial de ventas</strong>
+              <span>{sales.length} registros</span>
             </div>
-          )}
+
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+              {loading ? (
+                <p>Cargando ventas...</p>
+              ) : sales.length === 0 ? (
+                <p className="empty">No hay ventas registradas aún.</p>
+              ) : (
+                <div className="sales-table">
+                  <div className="sales-row sales-row-header">
+                    <span>#</span>
+                    <span>Cliente</span>
+                    <span>Total</span>
+                    <span>Fecha</span>
+                  </div>
+                  {sales.map((sale) => (
+                    <div key={sale.id} className="sales-row">
+                      <span>{sale.id}</span>
+                      <span>{getClientName(sale.cliente_id)}</span>
+                      <span className="sales-amount">${Number(sale.total || 0).toFixed(2)}</span>
+                      <span className="sales-date">{new Date(sale.fecha).toLocaleDateString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

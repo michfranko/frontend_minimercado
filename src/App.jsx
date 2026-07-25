@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import InventoryPage from './pages/InventoryPage'
 import ModulePage from './pages/ModulePage'
 import ProductsPage from './pages/ProductsPage'
+import ProveedoresPage from './pages/ProveedoresPage'
 import ReportsPage from './pages/ReportsPage'
 import SalesPage from './pages/SalesPage'
 
@@ -65,7 +66,7 @@ const sections = [
     icon: '07',
     description: 'Gestión de proveedores',
     group: 'Operaciones',
-    render: () => <ModulePage title="Proveedores" endpoint="/proveedores" description="Datos de proveedores del negocio." />,
+    render: () => <ProveedoresPage />,
   },
   {
     id: 'ventas',
