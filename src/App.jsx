@@ -6,6 +6,7 @@ import ClientsPage from './pages/ClientsPage'
 import Dashboard from './pages/Dashboard'
 import InventoryPage from './pages/InventoryPage'
 import ModulePage from './pages/ModulePage'
+import RolesPage from './pages/RolesPage'
 import ProductsPage from './pages/ProductsPage'
 import ProveedoresPage from './pages/ProveedoresPage'
 import ReportsPage from './pages/ReportsPage'
@@ -34,7 +35,7 @@ const sections = [
     icon: '03',
     description: 'Administración de permisos',
     group: 'Seguridad',
-    render: () => <ModulePage title="Roles" endpoint="/roles" description="Gestión de roles del sistema." />,
+    render: () => <RolesPage />,
   },
   {
     id: 'usuarios',

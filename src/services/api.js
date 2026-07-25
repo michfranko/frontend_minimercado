@@ -37,8 +37,8 @@ export async function pingBackend() {
   return request('/')
 }
 
-export async function connectModule(endpoint) {
-  return request(endpoint)
+export async function connectModule(endpoint, options = {}) {
+  return request(endpoint, options)
 }
 
 export default request
