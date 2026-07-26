@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { connectModule } from '../services/api'
 
 const DEFAULT_FORM = {
@@ -261,110 +262,112 @@ function UsuariosPage() {
       )}
 
       {/* Form Modal */}
-      {showForm && (
-        <div className="roles-modal-overlay" onClick={closeForm}>
-          <div className="roles-modal usuarios-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="roles-modal-header">
-              <h3>{editingId ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>
-              <button type="button" className="roles-modal-close" onClick={closeForm}>
-                ✕
-              </button>
+      {showForm &&
+        createPortal(
+          <div className="roles-modal-overlay" onClick={closeForm}>
+            <div className="roles-modal usuarios-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="roles-modal-header">
+                <h3>{editingId ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>
+                <button type="button" className="roles-modal-close" onClick={closeForm}>
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleSave} className="roles-form">
+                <div className="roles-form-fields">
+                  <div className="field">
+                    <label htmlFor="user-nombre">Nombre completo *</label>
+                    <input
+                      id="user-nombre"
+                      type="text"
+                      placeholder="Ej: Juan Pérez"
+                      value={form.nombre}
+                      onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="user-email">Correo electrónico *</label>
+                    <input
+                      id="user-email"
+                      type="email"
+                      placeholder="ejemplo@correo.com"
+                      value={form.email}
+                      onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="user-password">
+                      {editingId ? 'Contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}
+                    </label>
+                    <input
+                      id="user-password"
+                      type="password"
+                      placeholder={editingId ? '••••••••' : 'Ingresa una contraseña'}
+                      value={form.password}
+                      onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                      required={!editingId}
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="user-rol">Rol</label>
+                    <select
+                      id="user-rol"
+                      value={form.rol_id}
+                      onChange={(e) => setForm((prev) => ({ ...prev, rol_id: e.target.value }))}
+                    >
+                      <option value="">Sin rol asignado</option>
+                      {roles.map((rol) => (
+                        <option key={rol.id} value={rol.id}>
+                          {rol.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field checkbox-row">
+                    <input
+                      id="user-activo"
+                      type="checkbox"
+                      checked={form.activo}
+                      onChange={(e) => setForm((prev) => ({ ...prev, activo: e.target.checked }))}
+                    />
+                    <label htmlFor="user-activo">Usuario activo</label>
+                  </div>
+                </div>
+
+                {/* Save Messages */}
+                {saveError && (
+                  <div className="roles-save-error">
+                    <span>❌</span>
+                    <span>{saveError}</span>
+                  </div>
+                )}
+                {saveSuccess && (
+                  <div className="roles-save-success">
+                    <span>✅</span>
+                    <span>{saveSuccess}</span>
+                  </div>
+                )}
+
+                {/* Form Actions */}
+                <div className="roles-form-actions">
+                  <button type="button" className="button secondary" onClick={closeForm}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="button primary" disabled={saving}>
+                    {saving
+                      ? 'Guardando...'
+                      : editingId
+                        ? 'Actualizar Usuario'
+                        : 'Crear Usuario'}
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <form onSubmit={handleSave} className="roles-form">
-              <div className="roles-form-fields">
-                <div className="field">
-                  <label htmlFor="user-nombre">Nombre completo *</label>
-                  <input
-                    id="user-nombre"
-                    type="text"
-                    placeholder="Ej: Juan Pérez"
-                    value={form.nombre}
-                    onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="user-email">Correo electrónico *</label>
-                  <input
-                    id="user-email"
-                    type="email"
-                    placeholder="ejemplo@correo.com"
-                    value={form.email}
-                    onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="user-password">
-                    {editingId ? 'Contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}
-                  </label>
-                  <input
-                    id="user-password"
-                    type="password"
-                    placeholder={editingId ? '••••••••' : 'Ingresa una contraseña'}
-                    value={form.password}
-                    onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                    required={!editingId}
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="user-rol">Rol</label>
-                  <select
-                    id="user-rol"
-                    value={form.rol_id}
-                    onChange={(e) => setForm((prev) => ({ ...prev, rol_id: e.target.value }))}
-                  >
-                    <option value="">Sin rol asignado</option>
-                    {roles.map((rol) => (
-                      <option key={rol.id} value={rol.id}>
-                        {rol.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field checkbox-row">
-                  <input
-                    id="user-activo"
-                    type="checkbox"
-                    checked={form.activo}
-                    onChange={(e) => setForm((prev) => ({ ...prev, activo: e.target.checked }))}
-                  />
-                  <label htmlFor="user-activo">Usuario activo</label>
-                </div>
-              </div>
-
-              {/* Save Messages */}
-              {saveError && (
-                <div className="roles-save-error">
-                  <span>❌</span>
-                  <span>{saveError}</span>
-                </div>
-              )}
-              {saveSuccess && (
-                <div className="roles-save-success">
-                  <span>✅</span>
-                  <span>{saveSuccess}</span>
-                </div>
-              )}
-
-              {/* Form Actions */}
-              <div className="roles-form-actions">
-                <button type="button" className="button secondary" onClick={closeForm}>
-                  Cancelar
-                </button>
-                <button type="submit" className="button primary" disabled={saving}>
-                  {saving
-                    ? 'Guardando...'
-                    : editingId
-                      ? 'Actualizar Usuario'
-                      : 'Crear Usuario'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </section>
   )
 }

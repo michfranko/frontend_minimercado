@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { connectModule } from '../services/api'
 
 const PERMISSION_GROUPS = [
@@ -286,106 +287,108 @@ function RolesPage() {
       )}
 
       {/* Form Modal */}
-      {showForm && (
-        <div className="roles-modal-overlay" onClick={closeForm}>
-          <div className="roles-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="roles-modal-header">
-              <h3>{editingId ? 'Editar Rol' : 'Nuevo Rol'}</h3>
-              <button type="button" className="roles-modal-close" onClick={closeForm}>
-                ✕
-              </button>
+      {showForm &&
+        createPortal(
+          <div className="roles-modal-overlay" onClick={closeForm}>
+            <div className="roles-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="roles-modal-header">
+                <h3>{editingId ? 'Editar Rol' : 'Nuevo Rol'}</h3>
+                <button type="button" className="roles-modal-close" onClick={closeForm}>
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleSave} className="roles-form">
+                <div className="roles-form-fields">
+                  <div className="field">
+                    <label htmlFor="rol-nombre">Nombre del Rol *</label>
+                    <input
+                      id="rol-nombre"
+                      type="text"
+                      placeholder="Ej: Administrador"
+                      value={form.nombre}
+                      onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="rol-desc">Descripción</label>
+                    <textarea
+                      id="rol-desc"
+                      placeholder="Describe las responsabilidades de este rol..."
+                      value={form.descripcion}
+                      onChange={(e) => setForm((prev) => ({ ...prev, descripcion: e.target.value }))}
+                      rows={2}
+                    />
+                  </div>
+                  <div className="field checkbox-row">
+                    <input
+                      id="rol-activo"
+                      type="checkbox"
+                      checked={form.activo}
+                      onChange={(e) => setForm((prev) => ({ ...prev, activo: e.target.checked }))}
+                    />
+                    <label htmlFor="rol-activo">Rol activo</label>
+                  </div>
+                </div>
+
+                {/* Permissions */}
+                <div className="roles-permissions-section">
+                  <strong className="roles-permissions-title">Permisos del Rol</strong>
+                  <p className="roles-permissions-subtitle">
+                    Selecciona los permisos que tendrá este rol.
+                  </p>
+                  <div className="roles-permissions-grid">
+                    {PERMISSION_GROUPS.map((group) => (
+                      <div key={group.group} className="roles-perm-group">
+                        <div className="roles-perm-group-header">{group.group}</div>
+                        {group.permissions.map((perm) => (
+                          <label key={perm.key} className="roles-perm-item">
+                            <input
+                              type="checkbox"
+                              checked={form.permisos.includes(perm.key)}
+                              onChange={() => togglePermiso(perm.key)}
+                            />
+                            <span>{perm.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Save Messages */}
+                {saveError && (
+                  <div className="roles-save-error">
+                    <span>❌</span>
+                    <span>{saveError}</span>
+                  </div>
+                )}
+                {saveSuccess && (
+                  <div className="roles-save-success">
+                    <span>✅</span>
+                    <span>{saveSuccess}</span>
+                  </div>
+                )}
+
+                {/* Form Actions */}
+                <div className="roles-form-actions">
+                  <button type="button" className="button secondary" onClick={closeForm}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="button primary" disabled={saving}>
+                    {saving
+                      ? 'Guardando...'
+                      : editingId
+                        ? 'Actualizar Rol'
+                        : 'Crear Rol'}
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <form onSubmit={handleSave} className="roles-form">
-              <div className="roles-form-fields">
-                <div className="field">
-                  <label htmlFor="rol-nombre">Nombre del Rol *</label>
-                  <input
-                    id="rol-nombre"
-                    type="text"
-                    placeholder="Ej: Administrador"
-                    value={form.nombre}
-                    onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="rol-desc">Descripción</label>
-                  <textarea
-                    id="rol-desc"
-                    placeholder="Describe las responsabilidades de este rol..."
-                    value={form.descripcion}
-                    onChange={(e) => setForm((prev) => ({ ...prev, descripcion: e.target.value }))}
-                    rows={2}
-                  />
-                </div>
-                <div className="field checkbox-row">
-                  <input
-                    id="rol-activo"
-                    type="checkbox"
-                    checked={form.activo}
-                    onChange={(e) => setForm((prev) => ({ ...prev, activo: e.target.checked }))}
-                  />
-                  <label htmlFor="rol-activo">Rol activo</label>
-                </div>
-              </div>
-
-              {/* Permissions */}
-              <div className="roles-permissions-section">
-                <strong className="roles-permissions-title">Permisos del Rol</strong>
-                <p className="roles-permissions-subtitle">
-                  Selecciona los permisos que tendrá este rol.
-                </p>
-                <div className="roles-permissions-grid">
-                  {PERMISSION_GROUPS.map((group) => (
-                    <div key={group.group} className="roles-perm-group">
-                      <div className="roles-perm-group-header">{group.group}</div>
-                      {group.permissions.map((perm) => (
-                        <label key={perm.key} className="roles-perm-item">
-                          <input
-                            type="checkbox"
-                            checked={form.permisos.includes(perm.key)}
-                            onChange={() => togglePermiso(perm.key)}
-                          />
-                          <span>{perm.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Save Messages */}
-              {saveError && (
-                <div className="roles-save-error">
-                  <span>❌</span>
-                  <span>{saveError}</span>
-                </div>
-              )}
-              {saveSuccess && (
-                <div className="roles-save-success">
-                  <span>✅</span>
-                  <span>{saveSuccess}</span>
-                </div>
-              )}
-
-              {/* Form Actions */}
-              <div className="roles-form-actions">
-                <button type="button" className="button secondary" onClick={closeForm}>
-                  Cancelar
-                </button>
-                <button type="submit" className="button primary" disabled={saving}>
-                  {saving
-                    ? 'Guardando...'
-                    : editingId
-                      ? 'Actualizar Rol'
-                      : 'Crear Rol'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </section>
   )
 }

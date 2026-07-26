@@ -2385,10 +2385,13 @@
   border-radius: 24px;
   width: 100%;
   max-width: 680px;
-  max-height: 90vh;
+  max-height: 85vh;
+  max-height: min(85vh, 100% - 40px);
   overflow-y: auto;
   box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2);
   animation: rolesSlideUp 0.25s ease;
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 @keyframes rolesSlideUp {
@@ -2407,6 +2410,8 @@
   background: white;
   z-index: 1;
   border-radius: 24px 24px 0 0;
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 .roles-modal-header h3 {
@@ -2564,6 +2569,8 @@
 
 .usuarios-modal {
   max-width: 520px !important;
+  box-sizing: border-box !important;
+  min-height: 0 !important;
 }
 
 /* ===== Products Page Enhanced ===== */
@@ -3154,5 +3161,5 @@
 /* ===== Roles Page ===== */
 
 .roles-panel {
-  position: relative;
+  position: static;
 }
