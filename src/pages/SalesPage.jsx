@@ -333,21 +333,63 @@ function SalesPage() {
                   {expandedSaleId && (() => {
                     const sale = sales.find((s) => s.id === expandedSaleId)
                     if (!sale) return null
-                    const subtotal = Number(sale.total || 0)
+                    const items = (sale.detalles || []).map((detalle) => {
+                      const product = products.find((p) => p.id === detalle.producto_id)
+                      const cantidad = Number(detalle.cantidad || 0)
+                      const precioUnitario = Number(product?.precio || 0)
+                      const subtotal = cantidad * precioUnitario
+                      return {
+                        nombre: getProductName(detalle.producto_id),
+                        cantidad,
+                        precioUnitario,
+                        subtotal,
+                      }
+                    })
+                    const subtotalProd = items.reduce((acc, item) => acc + item.subtotal, 0)
+                    const impuesto = Number(sale.impuesto || 0)
+                    const descuento = Number(sale.descuento || 0)
+                    const totalCalculado = Math.max(0, subtotalProd - descuento + impuesto)
+                    const backendTotal = Number(sale.total || 0)
+                    const diferencia = Math.abs(totalCalculado - backendTotal)
+                    const mostrarDesglose = (impuesto > 0 || descuento > 0) && diferencia < 0.02
                     return (
                       <div className="sales-detail-expand">
                         <div className="sales-detail-items">
-                          {(sale.detalles || []).map((detalle, idx) => (
+                          {items.map((item, idx) => (
                             <div key={idx} className="sales-detail-item">
-                              <span className="sales-detail-name">{getProductName(detalle.producto_id)}</span>
-                              <span className="sales-detail-qty">x{detalle.cantidad}</span>
-                              <span className="sales-detail-price">${Number(detalle.precio_unitario || 0).toFixed(2)} c/u</span>
-                              <span className="sales-detail-subtotal">${(Number(detalle.cantidad || 0) * Number(detalle.precio_unitario || 0)).toFixed(2)}</span>
+                              <span className="sales-detail-name">{item.nombre}</span>
+                              <span className="sales-detail-qty">x{item.cantidad}</span>
+                              <span className="sales-detail-price">${item.precioUnitario.toFixed(2)} c/u</span>
+                              <span className="sales-detail-subtotal">${item.subtotal.toFixed(2)}</span>
                             </div>
                           ))}
                         </div>
-                        <div className="sales-detail-total">
-                          <strong>Total:</strong> ${subtotal.toFixed(2)}
+                        <div className="sales-detail-extra">
+                          <div className="sales-detail-row-extra">
+                            <span>Subtotal</span>
+                            <span>${subtotalProd.toFixed(2)}</span>
+                          </div>
+                          {descuento > 0 && (
+                            <div className="sales-detail-row-extra sales-detail-discount">
+                              <span>Descuento</span>
+                              <span>- ${descuento.toFixed(2)}</span>
+                            </div>
+                          )}
+                          {impuesto > 0 && (
+                            <div className="sales-detail-row-extra sales-detail-tax">
+                              <span>Impuesto</span>
+                              <span>+ ${impuesto.toFixed(2)}</span>
+                            </div>
+                          )}
+                          {!mostrarDesglose && diferencia >= 0.02 && (
+                            <div className="sales-detail-row-extra sales-detail-note">
+                              <span>Ajuste/otros cargos</span>
+                              <span>+ ${diferencia.toFixed(2)}</span>
+                            </div>
+                          )}
+                          <div className="sales-detail-total">
+                            <strong>Total:</strong> ${backendTotal.toFixed(2)}
+                          </div>
                         </div>
                       </div>
                     )
