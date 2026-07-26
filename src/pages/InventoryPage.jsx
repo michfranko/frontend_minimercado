@@ -80,7 +80,7 @@ function InventoryPage() {
           <span className="stat-chip">Productos: <strong>{totalProducts}</strong></span>
           <span className="stat-chip">Stock total: <strong>{totalStock}</strong></span>
           {lowStockCount > 0 && (
-            <span className="status-pill warn">Bajo stock: <strong>{lowStockCount}</strong></span>
+            <span className="status-pill ok">Bajo stock: <strong>{lowStockCount}</strong></span>
           )}
         </div>
       </div>
@@ -133,7 +133,7 @@ function InventoryPage() {
           </div>
 
           <div className="inventory-legend">
-            <span className="inventory-legend-item inventory-legend-ok">Saludable (>10)</span>
+            <span className="inventory-legend-item inventory-legend-ok">Saludable (11+)</span>
             <span className="inventory-legend-item inventory-legend-warn">Bajo (≤10)</span>
             <span className="inventory-legend-item inventory-legend-danger">Crítico (≤0)</span>
           </div>
