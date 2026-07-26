@@ -64,6 +64,10 @@ function InventoryPage() {
     }
   }
 
+  const totalProducts = inventory.length
+  const totalStock = inventory.reduce((acc, item) => acc + (Number(item.stock) || 0), 0)
+  const lowStockCount = inventory.filter((item) => Number(item.stock) <= 10).length
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -72,11 +76,19 @@ function InventoryPage() {
           <h2>Inventario</h2>
           <p>Consulta de stock y registro de movimientos.</p>
         </div>
+        <div className="panel-header-stats">
+          <span className="stat-chip">Productos: <strong>{totalProducts}</strong></span>
+          <span className="stat-chip">Stock total: <strong>{totalStock}</strong></span>
+          {lowStockCount > 0 && (
+            <span className="status-pill warn">Bajo stock: <strong>{lowStockCount}</strong></span>
+          )}
+        </div>
       </div>
 
       <div className="products-layout">
         <form className="form-card product-form" onSubmit={handleSubmit}>
           <h3>Registrar movimiento</h3>
+          <p className="form-hint">Actualiza el inventario mediante entradas, salidas o salidas por venta.</p>
           <div className="form-grid">
             <div className="field">
               <label htmlFor="producto_id">Producto</label>
@@ -110,8 +122,8 @@ function InventoryPage() {
           <button className="button primary" type="submit" disabled={submitting}>
             {submitting ? 'Guardando...' : 'Guardar movimiento'}
           </button>
-          {error && <div className="result-block">{error}</div>}
-          {success && <div className="result-block success">{success}</div>}
+          {error && <div className="result-block">⚠️ {error}</div>}
+          {success && <div className="result-block success">✅ {success}</div>}
         </form>
 
         <div className="table-card product-list">
@@ -120,8 +132,17 @@ function InventoryPage() {
             <span>{inventory.length} productos</span>
           </div>
 
+          <div className="inventory-legend">
+            <span className="inventory-legend-item inventory-legend-ok">Saludable (>10)</span>
+            <span className="inventory-legend-item inventory-legend-warn">Bajo (≤10)</span>
+            <span className="inventory-legend-item inventory-legend-danger">Crítico (≤0)</span>
+          </div>
+
           {loading ? (
-            <p>Cargando inventario...</p>
+            <div className="inventory-loading">
+              <span className="inventory-spinner" />
+              <span>Cargando inventario...</span>
+            </div>
           ) : inventory.length === 0 ? (
             <p className="empty">No hay productos en inventario.</p>
           ) : (
@@ -132,14 +153,18 @@ function InventoryPage() {
                 <span>Stock</span>
                 <span>Precio</span>
               </div>
-              {inventory.map((item) => (
-                <div key={item.id} className="product-row">
-                  <span>{item.nombre}</span>
-                  <span>{item.categoria}</span>
-                  <span>{item.stock}</span>
-                  <span>${Number(item.precio).toFixed(2)}</span>
-                </div>
-              ))}
+              {inventory.map((item) => {
+                const stock = Number(item.stock)
+                const stockClass = stock <= 0 ? 'inventory-stock-danger' : stock <= 10 ? 'inventory-stock-warn' : 'inventory-stock-ok'
+                return (
+                  <div key={item.id} className="product-row inventory-row">
+                    <span>{item.nombre}</span>
+                    <span>{item.categoria}</span>
+                    <span className={stockClass}>{stock}</span>
+                    <span>${Number(item.precio).toFixed(2)}</span>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
